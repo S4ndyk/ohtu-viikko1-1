@@ -13,11 +13,19 @@ import static org.junit.Assert.*;
 public class VarastoTest {
 
     Varasto varasto;
+    Varasto varastoSaldolla;
     double vertailuTarkkuus = 0.0001;
 
     @Before
     public void setUp() {
         varasto = new Varasto(10);
+        varastoSaldolla = new Varasto(10, 5);
+
+    }
+
+    @Test
+    public void merkkijonoMuotoOnOikein() {
+        assertEquals("saldo = 0.0, vielä tilaa 10.0", varasto.toString());
     }
 
     @Test
@@ -65,4 +73,64 @@ public class VarastoTest {
         assertEquals(4, varasto.paljonkoMahtuu(), vertailuTarkkuus);
     }
 
+    @Test
+    public void negatiivinenTilavuusPalauttaaNolla() {
+        Varasto virheellinen = new Varasto(-1);
+        assertEquals(0, virheellinen.getTilavuus(), vertailuTarkkuus);
+    }
+
+    @Test
+    public void negatiivinenLisaysEiMuuta() {
+        double ennen = varasto.getSaldo();
+        varasto.lisaaVarastoon(-5);
+        assertEquals(ennen, varasto.getSaldo(), vertailuTarkkuus);
+    }
+
+    @Test
+    public void negatiivinenOttoEiMuuta() {
+        double ennen = varasto.getSaldo();
+        varasto.otaVarastosta(-5);
+        assertEquals(ennen, varasto.getSaldo(), vertailuTarkkuus);
+    }
+
+    @Test
+    public void yliKaikenOttaminenNollaa() {
+        varasto.otaVarastosta(10000);
+        assertEquals(0, varasto.getSaldo(), vertailuTarkkuus);
+    }
+
+    @Test 
+    public void yliRajojenLisaaminenMaksimoi() {
+        varasto.lisaaVarastoon(10000);
+        assertEquals(10, varasto.getSaldo(), vertailuTarkkuus);
+    }
+
+    @Test
+    public void alkuSaldoisellaOikeaSaldo() {
+        assertEquals(5, varastoSaldolla.getSaldo(), vertailuTarkkuus);
+    }
+    @Test
+    public void alkuSaldoisellaOikeaTilavuus() {
+        assertEquals(10, varastoSaldolla.getTilavuus(), vertailuTarkkuus);
+    }
+
+    @Test
+    public void negatiivinenAlkusaldoNollaa() {
+        Varasto v = new Varasto(10, -5);
+        assertEquals(0, v.getSaldo(), vertailuTarkkuus);
+    }
+    
+    @Test
+    public void negatiivinenTilavuusNollaa() {
+        Varasto v = new Varasto(-5, 5);
+        assertEquals(0, v.getTilavuus(), vertailuTarkkuus);
+    }
+
+    @Test
+    public void alkuSaldoSuurempiKuinTilavuusMaksimoi() {
+        Varasto v = new Varasto(10, 500);
+        assertEquals(10, v.getSaldo(), vertailuTarkkuus);
+    }
+
+    
 }
